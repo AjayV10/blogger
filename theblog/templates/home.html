@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+{% extends 'base.html' %}
+{% block content %}
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+</head>
+<body>
+		<h1>POST</h1>
+		<ul>
+			{% for post in object_list %}
+			<li><a href="{% url 'article-detail' post.pk %}">{{post.title}}</a> 
+			 - {{ post.Category }} - {{post.author.first_name}} {{post.author.last_name}}
+			{% if user.is_authenticated %}
+			 {% if user.id == post.author.id %}
+			  <small> - <a href="{% url 'update_post' post.pk %}">Edit</a>
+			    <a href="{% url 'delete_post' post.pk %}">Delete</a>
+		      </small>
+		      {% endif %}
+		    {% endif %}
+			<br/>{{post.body|slice:":200"|safe}}<br/><br/>
+			</li>
+			{% endfor %}
+		</ul>
+</body>
+{% endblock %}
+</html>

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title_tag }}{% endblock %}
+{% block content %}
+<h1>{{ post.title }}</h1>
+By: {{post.author.first_name}} {{post.author.last_name}}
+{% if user.is_authenticated %}
+ {% if user.id == post.author.id %}
+	- <small><a href="{% url 'update_post' post.pk %}">Edit</a>
+	<a href="{% url 'delete_post' post.pk %}">Delete</a>
+	</small>
+	{% else %}
+		      Restrictions to make changes
+  {% endif %}
+{% endif %}
+<br/><hr>
+<br/>
+{% if post.header_image %}
+	<img src="{{post.header_image.url}}">
+	 <br/><br/>
+{% endif %}
+
+{{post.body|safe}}
+<hr>
+<br/>
+<form action="{% url 'like_post' post.pk%}" method="POST">
+  {% csrf_token %}
+    {% if user.is_authenticated %}
+     {% if liked %}
+	  <button type="submit", name="post_id", value="{{ post.id }}", class="btn btn-danger btn-sm">Unlike</button> 
+	 {% else %}
+
+	  <button type="submit", name="post_id", value="{{ post.id }}", class="btn btn-primary btn-sm">Like</button> - 
+	 {% endif %}
+	{% else %}
+	   <small><a href="{% url 'login' %}">Login </a>Like the posts</small>
+	{% endif %}
+
+	- {{ total_likes }} Likes
+</form>
+<br/>
+<hr>
+<h2>Comments....</h2>
+<br/>
+{% if not post.comments.all %}
+  No Comments yet.....<a href="{% url 'add_comment' post.pk %}">
+  Add One</a>
+{% else %}
+<a href="">Add Comments</a>
+<br/><br/>
+  {% for comment in post.comments.all %}
+    <strong>
+     {{comment.name}}
+    </strong>
+    <br/>
+    {{comment.body}}
+    <br/>
+  {% endfor %}
+{% endif %}
+{% endblock %}
